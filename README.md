@@ -4,6 +4,6 @@ Helpers to:
 
 Edit the 'hosts' file and change the remote_user in the playbook.
 Then run it as:
-- ansible-playboaok -i hosts nfs.yml   --key-file=/home/johan/.ssh/id_rsa
+- ansible-playbook -i hosts nfs.yml   --key-file=/home/johan/.ssh/id_rsa
 and to setup the /etc/hosts file:
 - ansible-playbook -i hosts etchosts.yml   --key-file=/home/johan/.ssh/id_rsa
