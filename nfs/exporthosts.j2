@@ -1,0 +1,4 @@
+{% for host in groups['client'] %}
+/mnt/data {{ hostvars[host]['inventory_hostname']}}(rw,sync,no_subtree_check,anonuid=595,anonuid=595)
+{% endfor %}
+

@@ -1,0 +1,27 @@
+- name: Setup etc hosts
+  gather_facts: false
+  remote_user: vagrant
+  become: yes
+  hosts: public
+  tasks:
+      - name: Remove existing etc hosts
+        ansible.builtin.file:
+          path: /etc/hosts
+          state: absent
+      - name: Create etc hosts
+        ansible.builtin.file:
+           path: /etc/hosts
+           state: touch
+           mode: u=rw,g=r,o=r
+      - name: Update /etc/hosts
+        become: true
+        blockinfile:
+           path: /etc/hosts
+           create: yes
+           block: |
+              127.0.0.1 localhost
+              # The following lines are desirable for IPv6 capable hosts
+              {% for item in groups['internal'] %}
+               {{ hostvars[item].ansible_ssh_host }}   {{ item }}
+              {% endfor %}
+

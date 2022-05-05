@@ -1,0 +1,73 @@
+- hosts: all
+  remote_user: vagrant
+  vars:
+    - user: elasticsearch
+    - group: elasticsearch
+    - nfspath: /mnt/data
+
+- name: Setup NFS
+  gather_facts: false
+  remote_user: vagrant
+  become: yes
+  hosts: all
+  tasks:
+          - name: Ensure group exists
+            ansible.builtin.group:
+                name: "{{ user }}"
+                state: present
+
+          - name: Create user
+            ansible.builtin.user:
+                name: "{{ user }}"
+                comment: "{{ user }}" 
+                uid: 595
+                group: "{{ group }}" 
+
+          - name: Create dir
+            ansible.builtin.file:
+                path: /mnt/data
+                state: directory
+                mode: '0771'
+                owner: "{{ user }}"		
+                group: "{{ group }}" 
+
+          - name: Install nfs-server
+            ansible.builtin.package:
+                name: nfs-server
+                state: present
+
+             
+- name: Configure NFS Server
+  gather_facts: false
+  remote_user: vagrant
+  become: yes
+  hosts: server
+  tasks:
+          - name: Create /etc/exports
+            template:
+                src: exporthosts.j2
+                dest: /etc/exports
+
+
+          - name: Restart network service for interface eth0
+            ansible.builtin.service:
+               name: nfs-server
+               state: restarted
+
+- name: Configure NFS Client
+  gather_facts: false
+  remote_user: vagrant
+  become: yes
+  hosts: client
+  tasks:
+          - name: Mount
+            ansible.posix.mount:
+                fstype: nfs
+                opts: defaults
+                dump: 0
+                passno: 0
+                state: mounted
+                src: "{{item}}:/mnt/data"
+                path: /mnt/data
+            with_items: 
+                - "{{ groups['server'] }}"

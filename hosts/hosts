@@ -1,0 +1,16 @@
+
+#ansible will connect to these
+[public]
+10.10.10.30
+10.10.10.31
+10.10.10.32
+10.10.10.33
+
+# this is what will go to etc hosts file:
+[internal]
+n1 ansible_ssh_host=10.10.10.30
+n2 ansible_ssh_host=10.10.10.31
+n3 ansible_ssh_host=10.10.10.32
+n4 ansible_ssh_host=10.10.10.33
+
+
